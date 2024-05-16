@@ -1,0 +1,36 @@
+package cep;
+import com.ftn.sbnz.model.events.FailedLoginAttempt
+import com.ftn.sbnz.model.events.BlockedUser
+
+rule "Block users"
+    when
+        $la: FailedLoginAttempt($u: user, $ip: ip)
+        $count: Number(intValue > 3) from accumulate(
+            $la2: FailedLoginAttempt(
+                user == $u,
+                ip == $ip,
+                this != $la2,
+                this after[0s, 5m] $la
+            ),
+            count($la2)
+        )
+        Number(intValue == 0) from accumulate(
+            $bu: BlockedUser(user == $u, ip == $ip),
+            count($bu)
+        )
+    then
+        insert(new BlockedUser($u, $ip));
+end
+
+rule "Notify admin"
+    when
+        $bu: BlockedUser(notify == false)
+    then
+        System.out.println("======== User Blocked =======");
+        System.out.println("User:" + $bu.user);
+        System.out.println("IP:" + $bu.ip);
+        System.out.println("=============================");
+        modify($bu){
+            setNotify(true);
+        }
+end

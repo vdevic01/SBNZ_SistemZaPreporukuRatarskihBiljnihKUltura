@@ -1,0 +1,9 @@
+package com.ftn.sbnz.model.models;
+
+public enum GrupaZrenja {
+    S_VRLO_RANI, S_RANI, S_SREDNJE_RANI, S_SREDNJE_KASNI, S_KASNI, S_VRLO_KASNI,
+    K_FAO100, K_FAO200, K_FAO300, K_FAO400, K_FAO500, K_FAO600, K_FAO700,
+    P_VRLO_RANA, P_RANA, P_KASNA,
+    UR_VRLO_RANA, UR_RANA, UR_KASNA,
+    SECERNA_REPA
+}

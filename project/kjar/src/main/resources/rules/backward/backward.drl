@@ -1,0 +1,16 @@
+package backward;
+import  com.ftn.sbnz.model.models.Biljka;
+
+query bezPupoljka(x)
+    $t: Biljka(x, "Bez pupoljka";) or (Biljka(x, y;) and bezPupoljka(y;))
+end
+
+rule "go"
+    when
+        String(this == "go")
+        bezPupoljka(biljka;)
+    then
+        System.out.println("------------------------------------------");
+        System.out.println(biljka);
+        System.out.println("------------------------------------------");
+end
