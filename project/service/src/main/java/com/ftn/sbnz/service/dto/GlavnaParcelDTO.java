@@ -1,9 +1,13 @@
-package com.ftn.sbnz.model.models;
+package com.ftn.sbnz.service.dto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GlavnaParcela {
+import com.ftn.sbnz.model.models.BiljnaKultura;
+import com.ftn.sbnz.model.models.JacinaVetra;
+import com.ftn.sbnz.model.models.Korisnik;
+
+public class GlavnaParcelDTO {
     private long id;
 
     private double geografskaSirina;
@@ -16,14 +20,6 @@ public class GlavnaParcela {
     private BiljnaKultura poslednjaBiljnaKultura;
 
     private JacinaVetra ocekivanaJacinaVetra;
-
-    private List<String> preporuke = new ArrayList<>();
-    private List<String> preporukeGrupa = new ArrayList<>();
-
-
-    public List<String> getPreporukeGrupa() {
-        return preporukeGrupa;
-    }
 
     public long getId() {
         return id;
@@ -81,11 +77,7 @@ public class GlavnaParcela {
         this.ocekivanaJacinaVetra = ocekivanaJacinaVetra;
     }
 
-    public List<String> getPreporuke() {
-        return preporuke;
-    }
-
-    public GlavnaParcela(long id, double geografskaSirina, double geografskaDuzina, Korisnik vlasnik, double humus,
+    public GlavnaParcelDTO(long id, double geografskaSirina, double geografskaDuzina, Korisnik vlasnik, double humus,
             BiljnaKultura poslednjaBiljnaKultura, JacinaVetra ocekivanaJacinaVetra) {
         this.id = id;
         this.geografskaSirina = geografskaSirina;
@@ -95,7 +87,11 @@ public class GlavnaParcela {
         this.poslednjaBiljnaKultura = poslednjaBiljnaKultura;
         this.ocekivanaJacinaVetra = ocekivanaJacinaVetra;
     }
-    public GlavnaParcela(){
-        
-    }   
+
+    public GlavnaParcelDTO() {
+    }
+
+    
+
+    
 }

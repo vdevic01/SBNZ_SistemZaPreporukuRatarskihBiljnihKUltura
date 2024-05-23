@@ -1,8 +1,12 @@
 package com.ftn.sbnz.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -10,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.sbnz.model.events.FailedLoginAttempt;
 import com.ftn.sbnz.model.events.Item;
+import com.ftn.sbnz.model.models.GlavnaParcela;
+import com.ftn.sbnz.model.models.Korisnik;
+import com.ftn.sbnz.service.dto.GlavnaParcelDTO;
 
 
 @RestController
@@ -40,6 +47,17 @@ public class SampleAppController {
 	public void login(@RequestParam(required = true) long user, @RequestParam(required = true) String ip) {
 		FailedLoginAttempt fla = new FailedLoginAttempt(user, ip);
 		this.sampleService.login(fla);
+	}
+
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	public void test() {
+		this.sampleService.test();
+	}
+
+	@RequestMapping(value = "/preporuke", method = RequestMethod.POST)
+	public List<String> dobaviPreporuke(@RequestBody GlavnaParcelDTO parcelaDTO){
+		GlavnaParcela parcela = new GlavnaParcela(parcelaDTO.getId(), parcelaDTO.getGeografskaSirina(), parcelaDTO.getGeografskaDuzina(), new Korisnik(1, null, null), parcelaDTO.getHumus(), parcelaDTO.getPoslednjaBiljnaKultura(), parcelaDTO.getOcekivanaJacinaVetra());
+		return this.sampleService.dobaviPreporuke(parcela);
 	}
 	
 }
