@@ -1,17 +1,27 @@
 package com.ftn.sbnz.service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
 
 import com.ftn.sbnz.model.models.Biljka;
 
+import org.drools.template.DataProviderCompiler;
+import org.drools.template.DataProvider;
+import org.drools.template.objects.ArrayDataProvider;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieScanner;
+import org.kie.api.builder.Message;
+import org.kie.api.builder.Results;
+import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.internal.utils.KieHelper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -36,6 +46,16 @@ public class ServiceApplication  {
 	}
 
 	@Bean
+	public KieContainer kieContainer(){
+		KieServices ks = KieServices.Factory.get();
+		KieContainer kContainer = ks
+				.newKieContainer(ks.newReleaseId("com.ftn.sbnz", "kjar", "0.0.1-SNAPSHOT"));
+		KieScanner kScanner = ks.newKieScanner(kContainer);
+		kScanner.start(1000);
+		return kContainer;
+	}
+
+	@Bean
 	public KieSession kieSession() {
 		KieServices ks = KieServices.Factory.get();
 		KieContainer kContainer = ks
@@ -43,63 +63,65 @@ public class ServiceApplication  {
 		KieScanner kScanner = ks.newKieScanner(kContainer);
 		kScanner.start(1000);
 		KieSession kieSession = kContainer.newKieSession("cepKsession");
-		return kieSession;
+		// return kieSession;
+		return createKieSessionFromTemplate();
 	}
-	
-	// @Bean
-	// public KieSession kieSession() {
-	// 	var b1 = new Biljka("Golosemenice", "Biljka");
-	// 	var b2 = new Biljka("Skrivenosemenice", "Biljka");
 
-	// 	var b3 = new Biljka("Alge", "Golosemenice");
-	// 	var b4 = new Biljka("Kombu alga", "Alga");
-	// 	var b5 = new Biljka("Nori alga", "Alga");
-	// 	var b6 = new Biljka("Agar agar alga", "Alga");
+	public KieSession createKieSessionFromTemplate() {
+        ClassPathResource classPathResource = new ClassPathResource("/rules/cep/template-rules.drt");
+        InputStream template;
+        try {
+            template = classPathResource.getInputStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-	// 	var b7 = new Biljka("Mahovine", "Golosemenice");
-	// 	var b8 = new Biljka("Plutajuća Riccia", "Mahovine");
-	// 	var b9 = new Biljka("Javanska mahovina", "Mahovine");
+        DataProvider dataProvider = new ArrayDataProvider(new String[][]{
+                new String[]{"KUKURUZ", "APRIL", "OCTOBER", "1700", "K_FAO700", "&&"},
+				new String[]{"KUKURUZ", "APRIL", "OCTOBER", "1600", "K_FAO600", "&&"},
+				new String[]{"KUKURUZ", "APRIL", "OCTOBER", "1500", "K_FAO500", "&&"},
+				new String[]{"KUKURUZ", "APRIL", "OCTOBER", "1400", "K_FAO400", "&&"},
+				new String[]{"KUKURUZ", "APRIL", "OCTOBER", "1300", "K_FAO300", "&&"},
+				new String[]{"KUKURUZ", "APRIL", "OCTOBER", "1200", "K_FAO200", "&&"},
+				new String[]{"KUKURUZ", "APRIL", "OCTOBER", "1100", "K_FAO100", "&&"},
+				new String[]{"SECERNA_REPA", "APRIL", "OCTOBER", "0", "SECERNA_REPA", "&&"},
+				new String[]{"SUNCOKRET", "APRIL", "SEPTEMBER", "1100", "S_VRLO_RANI", "&&"},
+				new String[]{"SUNCOKRET", "APRIL", "SEPTEMBER", "1160", "S_RANI", "&&"},
+				new String[]{"SUNCOKRET", "APRIL", "SEPTEMBER", "1220", "S_SREDNJE_RANI", "&&"},
+				new String[]{"SUNCOKRET", "APRIL", "SEPTEMBER", "1280", "S_SREDNJE_KASNI", "&&"},
+				new String[]{"SUNCOKRET", "APRIL", "SEPTEMBER", "1340", "S_KASNI", "&&"},
+				new String[]{"SUNCOKRET", "APRIL", "SEPTEMBER", "1100", "S_VRLO_KASNI", "&&"},
+				new String[]{"PSENICA", "OCTOBER", "JUNE", "550", "P_VRLO_RANA", "||"},
+				new String[]{"PSENICA", "OCTOBER", "JUNE", "640", "P_RANA", "||"},
+				new String[]{"PSENICA", "OCTOBER", "JUNE", "730", "P_KASNA", "||"},
+				new String[]{"ULJANA_REPICA", "OCTOBER", "MAY", "350", "UR_VRLO_RANA", "||"},
+				new String[]{"ULJANA_REPICA", "OCTOBER", "MAY", "385", "UR_RANA", "||"},
+				new String[]{"ULJANA_REPICA", "OCTOBER", "MAY", "420", "UR_KASNA", "||"},
+			});
 
-	// 	var b10 = new Biljka("Paprati", "Golosemenice");
-	// 	var b11 = new Biljka("Dicksonia antarctica", "Paprati");
-	// 	var b12 = new Biljka("Blechnum nudum", "Paprati");
+        DataProviderCompiler converter = new DataProviderCompiler();
+        String drl = converter.compile(dataProvider, template);
 
-	// 	var b13 = new Biljka("Sa pupoljkom", "Skrivenosemenice");
-	// 	var b14 = new Biljka("Ljiljan", "Sa pupoljkom");
-	// 	var b15 = new Biljka("Orhideja", "Sa pupoljkom");
-	// 	var b16 = new Biljka("Ruza", "Sa pupoljkom");
+        return createKieSessionFromDRL(drl);
+    }
 
-	// 	var b17 = new Biljka("Bez pupoljka", "Skrivenosemenice");
-	// 	var b18 = new Biljka("Drvo zivota", "Bez pupoljka");
-	// 	var b19 = new Biljka("Asparagus", "Bez pupoljka");
-	// 	var b20 = new Biljka("Hrizantema", "Bez pupoljka");
+    private KieSession createKieSessionFromDRL(String drl) {
+        KieHelper kieHelper = new KieHelper();
+        kieHelper.addContent(drl, ResourceType.DRL);
 
-	// 	List<Biljka> items = List.of(
-	// 		b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20
-	// 	);
-	// 	KieServices ks = KieServices.Factory.get();
-	// 	KieContainer kContainer = ks
-	// 			.newKieContainer(ks.newReleaseId("com.ftn.sbnz", "kjar", "0.0.1-SNAPSHOT"));
-	// 	KieScanner kScanner = ks.newKieScanner(kContainer);
-	// 	kScanner.start(1000);
-	// 	KieSession kieSession = kContainer.newKieSession("bwKsession");
+        Results results = kieHelper.verify();
 
-	// 	for(Biljka b : items){
-	// 		kieSession.insert(b);
-	// 	}
-	// 	kieSession.insert("go");
-	// 	kieSession.fireAllRules();
+        if (results.hasMessages(Message.Level.WARNING, Message.Level.ERROR)) {
+            List<Message> messages = results.getMessages(Message.Level.WARNING, Message.Level.ERROR);
+            for (Message message : messages) {
+                System.out.println("Error: " + message.getText());
+            }
 
-	// 	return kieSession;
-	// }
+            throw new IllegalStateException("Compilation errors were found. Check the logs.");
+        }
 
-	/*
-	 * KieServices ks = KieServices.Factory.get(); KieContainer kContainer =
-	 * ks.newKieContainer(ks.newReleaseId("drools-spring-v2",
-	 * "drools-spring-v2-kjar", "0.0.1-SNAPSHOT")); KieScanner kScanner =
-	 * ks.newKieScanner(kContainer); kScanner.start(10_000); KieSession kSession =
-	 * kContainer.newKieSession();
-	 */
+        return kieHelper.build().newKieSession();
+    }
+}
 
 	 // Degree day se racuna kao Max((MaxTemp + MinTemp) / 2 - 10, 0)
-}

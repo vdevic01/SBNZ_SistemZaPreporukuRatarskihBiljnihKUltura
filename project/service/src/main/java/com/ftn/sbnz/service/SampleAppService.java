@@ -79,10 +79,10 @@ public class SampleAppService {
 		// }
 		// JsonNode responseBody = jsonResponse.getBody();
 		// System.out.println(responseBody.toString());
-		LocalDateTime ldt01 = LocalDateTime.of(2023, 5, 2, 0, 0, 0);
-		LocalDateTime ldt02 = LocalDateTime.of(2023, 9, 2, 0, 0, 0);
-		MeteoroloskiPodaci mp01 = new MeteoroloskiPodaci(1, ldt01, 1500);
-		MeteoroloskiPodaci mp02 = new MeteoroloskiPodaci(1, ldt02, 150);
+		LocalDateTime ldt01 = LocalDateTime.of(2023, 7, 2, 0, 0, 0);
+		LocalDateTime ldt02 = LocalDateTime.of(2023, 8, 2, 0, 0, 0);
+		MeteoroloskiPodaci mp01 = new MeteoroloskiPodaci(1, ldt01, 1200);
+		MeteoroloskiPodaci mp02 = new MeteoroloskiPodaci(1, ldt02, 250);
 		kieSession.insert(parcela);
 		kieSession.insert(mp01);
 		kieSession.insert(mp02);

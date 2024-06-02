@@ -1,0 +1,204 @@
+template header
+biljnaKultura
+odMeseca
+doMeseca
+akumuliranaTemperatura
+grupaZrenja
+operator
+
+package cep;
+
+import com.ftn.sbnz.model.models.GlavnaParcela
+import com.ftn.sbnz.model.models.BiljnaKultura
+import com.ftn.sbnz.model.models.JacinaVetra
+import com.ftn.sbnz.model.models.PreporukaBiljka
+import com.ftn.sbnz.model.models.GrupaZrenja
+import com.ftn.sbnz.model.models.MeteoroloskiPodaci
+import com.ftn.sbnz.model.models.PreporukaGrupaZrenja
+import com.ftn.sbnz.model.models.PosadjenaKultura
+import java.time.LocalDateTime;
+import java.time.Month;
+
+rule "Preporuka SUNCOKRET"
+    when
+        $gp: GlavnaParcela(
+            humus > 0.005,
+            poslednjaBiljnaKultura != BiljnaKultura.SUNCOKRET,
+            ocekivanaJacinaVetra == JacinaVetra.SLAB)
+        not(PreporukaBiljka(kultura == BiljnaKultura.SUNCOKRET,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka SUNCOKRET =======");
+        insert(new PreporukaBiljka(BiljnaKultura.SUNCOKRET, $gp));
+        $gp.getPreporuke().add("SUNCOKRET");
+end
+
+rule "Preporuka soja"
+    when
+        $gp: GlavnaParcela(
+            humus > 0.01,
+            poslednjaBiljnaKultura != BiljnaKultura.SOJA,
+            ocekivanaJacinaVetra != JacinaVetra.JAK)
+        not(PreporukaBiljka(kultura == BiljnaKultura.SOJA,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka SOJA =======");
+        insert(new PreporukaBiljka(BiljnaKultura.SOJA, $gp));
+        $gp.getPreporuke().add("SOJA");
+end
+
+rule "Preporuka psenica"
+    when
+        $gp: GlavnaParcela(
+            humus > 0.01,
+            poslednjaBiljnaKultura != BiljnaKultura.PSENICA,
+            ocekivanaJacinaVetra != JacinaVetra.JAK)
+        not(PreporukaBiljka(kultura == BiljnaKultura.PSENICA,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka psenica =======");
+        insert(new PreporukaBiljka(BiljnaKultura.PSENICA, $gp));
+        $gp.getPreporuke().add("PSENICA");
+end
+
+rule "Preporuka ULJANA_REPICA"
+    when
+        $gp: GlavnaParcela(
+            humus > 0.01,
+            poslednjaBiljnaKultura != BiljnaKultura.ULJANA_REPICA,
+            ocekivanaJacinaVetra != JacinaVetra.JAK)
+        not(PreporukaBiljka(kultura == BiljnaKultura.ULJANA_REPICA,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka ULJANA_REPICA =======");
+        insert(new PreporukaBiljka(BiljnaKultura.ULJANA_REPICA, $gp));
+        $gp.getPreporuke().add("ULJANA_REPICA");
+end
+
+rule "Preporuka SECERNA_REPA"
+    when
+        $gp: GlavnaParcela(
+            humus > 0.03,
+            poslednjaBiljnaKultura != BiljnaKultura.SECERNA_REPA)
+        not(PreporukaBiljka(kultura == BiljnaKultura.SECERNA_REPA,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka SECERNA_REPA =======");
+        insert(new PreporukaBiljka(BiljnaKultura.SECERNA_REPA, $gp));
+        $gp.getPreporuke().add("SECERNA_REPA");
+end
+
+rule "Preporuka KUKURUZ"
+    when
+        $gp: GlavnaParcela( 
+            humus > 0.03,
+            poslednjaBiljnaKultura != BiljnaKultura.KUKURUZ,
+            ocekivanaJacinaVetra == JacinaVetra.SLAB)
+        not(PreporukaBiljka(kultura == BiljnaKultura.KUKURUZ,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka KUKURUZ =======");
+        insert(new PreporukaBiljka(BiljnaKultura.KUKURUZ, $gp));
+        $gp.getPreporuke().add("KUKURUZ");
+end
+
+rule "Rotacija psenica"
+    when
+        $gp: GlavnaParcela(
+            poslednjaBiljnaKultura == BiljnaKultura.SUNCOKRET)
+        not(PreporukaBiljka(kultura == BiljnaKultura.PSENICA,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka psenica =======");
+        insert(new PreporukaBiljka(BiljnaKultura.PSENICA, $gp));
+        $gp.getPreporuke().add("PSENICA");
+end
+
+rule "Rotacija ULJANA_REPICA"
+    when
+        $gp: GlavnaParcela(
+            poslednjaBiljnaKultura == BiljnaKultura.SOJA ||
+            poslednjaBiljnaKultura == BiljnaKultura.PSENICA)
+        not(PreporukaBiljka(kultura == BiljnaKultura.ULJANA_REPICA,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka ULJANA_REPICA =======");
+        insert(new PreporukaBiljka(BiljnaKultura.ULJANA_REPICA, $gp));
+        $gp.getPreporuke().add("ULJANA_REPICA");
+end
+
+rule "Rotacija KUKURUZ"
+    when
+        $gp: GlavnaParcela(
+            poslednjaBiljnaKultura == BiljnaKultura.ULJANA_REPICA || 
+            poslednjaBiljnaKultura == BiljnaKultura.SECERNA_REPA)
+        not(PreporukaBiljka(kultura == BiljnaKultura.KUKURUZ,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka KUKURUZ =======");
+        insert(new PreporukaBiljka(BiljnaKultura.KUKURUZ, $gp));
+        $gp.getPreporuke().add("KUKURUZ");
+end
+
+rule "Rotacija soja"
+    when
+        $gp: GlavnaParcela(
+            poslednjaBiljnaKultura == BiljnaKultura.KUKURUZ)
+        not(PreporukaBiljka(kultura == BiljnaKultura.SOJA,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka soja =======");
+        insert(new PreporukaBiljka(BiljnaKultura.SOJA, $gp));
+        $gp.getPreporuke().add("SOJA");
+end
+
+rule "Rotacija SECERNA_REPA"
+    when
+        $gp: GlavnaParcela(
+            poslednjaBiljnaKultura == BiljnaKultura.SOJA ||
+            poslednjaBiljnaKultura == BiljnaKultura.PSENICA)
+        not(PreporukaBiljka(kultura == BiljnaKultura.SECERNA_REPA,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka SECERNA_REPA =======");
+        insert(new PreporukaBiljka(BiljnaKultura.SECERNA_REPA, $gp));
+        $gp.getPreporuke().add("SECERNA_REPA");
+end
+
+rule "Rotacija SUNCOKRET"
+    when
+        $gp: GlavnaParcela(
+            poslednjaBiljnaKultura == BiljnaKultura.SECERNA_REPA ||
+            poslednjaBiljnaKultura == BiljnaKultura.ULJANA_REPICA)
+        not(PreporukaBiljka(kultura == BiljnaKultura.SUNCOKRET,
+            glavnaParcela.getId() == $gp.getId()))
+    then
+        System.out.println("======== Preporuka SUNCOKRET =======");
+        insert(new PreporukaBiljka(BiljnaKultura.SUNCOKRET, $gp));
+        $gp.getPreporuke().add("SUNCOKRET");
+end
+
+template "pravila-za-grupu-zrenja"
+
+rule "Preporuka GrupaZrenja_@{row.rowNumber}"
+    when
+        $pb: PreporukaBiljka(
+            kultura == BiljnaKultura.@{biljnaKultura},
+            $gp: glavnaParcela
+        )
+        Number(doubleValue > @{akumuliranaTemperatura}) from accumulate(
+            $mp: MeteoroloskiPodaci(
+                parcelaID == $gp.getId(),
+                $timestamp: timestamp,
+                $temperatura: temperatura
+            )
+            and eval($mp.getMonth() >= Month.@{odMeseca}.getValue() @{operator} $mp.getMonth() <= Month.@{doMeseca}.getValue()),
+            sum(Math.max($temperatura - 10.0, 0.0))
+        )
+    then
+        System.out.println("======== Preporuka @{grupaZrenja} =======");
+        insert(new PreporukaGrupaZrenja(GrupaZrenja.@{grupaZrenja}, $gp));
+        $gp.getPreporukeGrupa().add("@{grupaZrenja}");
+end
+
+end template
