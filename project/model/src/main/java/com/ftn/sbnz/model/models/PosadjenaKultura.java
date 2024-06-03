@@ -11,6 +11,7 @@ public class PosadjenaKultura {
     private GlavnaParcela parcela;
     private Date timestamp;
     private BiljnaKultura kultura;
+    private GrupaZrenja grupaZrenja;
 
     public GlavnaParcela getParcela() {
         return parcela;
@@ -30,10 +31,19 @@ public class PosadjenaKultura {
     public void setKultura(BiljnaKultura kultura) {
         this.kultura = kultura;
     }
-    public PosadjenaKultura(GlavnaParcela parcela, Date timestamp, BiljnaKultura kultura) {
+    
+    public GrupaZrenja getGrupaZrenja() {
+        return grupaZrenja;
+    }
+    public void setGrupaZrenja(GrupaZrenja grupaZrenja) {
+        this.grupaZrenja = grupaZrenja;
+    }
+
+    public PosadjenaKultura(GlavnaParcela parcela, Date timestamp, BiljnaKultura kultura, GrupaZrenja grupaZrenja) {
         this.parcela = parcela;
         this.timestamp = timestamp;
         this.kultura = kultura;
+        this.grupaZrenja = grupaZrenja;
     }
     public PosadjenaKultura() {
     }

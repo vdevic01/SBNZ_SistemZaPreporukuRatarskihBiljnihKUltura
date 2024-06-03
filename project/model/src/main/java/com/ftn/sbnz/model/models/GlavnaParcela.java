@@ -19,8 +19,11 @@ public class GlavnaParcela {
 
     private List<String> preporuke = new ArrayList<>();
     private List<String> preporukeGrupa = new ArrayList<>();
-
-
+    private List<String> finalnaPreporuka = new ArrayList<>();
+    public List<String> getFinalnaPreporuka() {
+        return finalnaPreporuka;
+    }   
+    
     public List<String> getPreporukeGrupa() {
         return preporukeGrupa;
     }
@@ -97,5 +100,5 @@ public class GlavnaParcela {
     }
     public GlavnaParcela(){
         
-    }   
+    }
 }

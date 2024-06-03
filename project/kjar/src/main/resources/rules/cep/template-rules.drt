@@ -23,8 +23,12 @@ rule "Preporuka SUNCOKRET"
     when
         $gp: GlavnaParcela(
             humus > 0.005,
-            poslednjaBiljnaKultura != BiljnaKultura.SUNCOKRET,
             ocekivanaJacinaVetra == JacinaVetra.SLAB)
+        Number(intValue == 0) from accumulate(
+            PosadjenaKultura(
+                parcela.getId() == $gp.getId(),
+                kultura == BiljnaKultura.SUNCOKRET
+            ) over window:time(365d), count(1))
         not(PreporukaBiljka(kultura == BiljnaKultura.SUNCOKRET,
             glavnaParcela.getId() == $gp.getId()))
     then
@@ -37,8 +41,12 @@ rule "Preporuka soja"
     when
         $gp: GlavnaParcela(
             humus > 0.01,
-            poslednjaBiljnaKultura != BiljnaKultura.SOJA,
             ocekivanaJacinaVetra != JacinaVetra.JAK)
+        Number(intValue == 0) from accumulate(
+            PosadjenaKultura(
+                parcela.getId() == $gp.getId(),
+                kultura == BiljnaKultura.SOJA
+            ) over window:time(365d), count(1))    
         not(PreporukaBiljka(kultura == BiljnaKultura.SOJA,
             glavnaParcela.getId() == $gp.getId()))
     then
@@ -51,8 +59,12 @@ rule "Preporuka psenica"
     when
         $gp: GlavnaParcela(
             humus > 0.01,
-            poslednjaBiljnaKultura != BiljnaKultura.PSENICA,
             ocekivanaJacinaVetra != JacinaVetra.JAK)
+        Number(intValue == 0) from accumulate(
+            PosadjenaKultura(
+                parcela.getId() == $gp.getId(),
+                kultura == BiljnaKultura.PSENICA
+            ) over window:time(365d), count(1))            
         not(PreporukaBiljka(kultura == BiljnaKultura.PSENICA,
             glavnaParcela.getId() == $gp.getId()))
     then
@@ -67,6 +79,11 @@ rule "Preporuka ULJANA_REPICA"
             humus > 0.01,
             poslednjaBiljnaKultura != BiljnaKultura.ULJANA_REPICA,
             ocekivanaJacinaVetra != JacinaVetra.JAK)
+        Number(intValue == 0) from accumulate(
+            PosadjenaKultura(
+                parcela.getId() == $gp.getId(),
+                kultura == BiljnaKultura.ULJANA_REPICA
+            ) over window:time(365d), count(1))
         not(PreporukaBiljka(kultura == BiljnaKultura.ULJANA_REPICA,
             glavnaParcela.getId() == $gp.getId()))
     then
@@ -77,9 +94,12 @@ end
 
 rule "Preporuka SECERNA_REPA"
     when
-        $gp: GlavnaParcela(
-            humus > 0.03,
-            poslednjaBiljnaKultura != BiljnaKultura.SECERNA_REPA)
+        $gp: GlavnaParcela(humus > 0.03)
+        Number(intValue == 0) from accumulate(
+            PosadjenaKultura(
+                parcela.getId() == $gp.getId(),
+                kultura == BiljnaKultura.SECERNA_REPA
+            ) over window:time(365d), count(1))            
         not(PreporukaBiljka(kultura == BiljnaKultura.SECERNA_REPA,
             glavnaParcela.getId() == $gp.getId()))
     then
@@ -92,8 +112,12 @@ rule "Preporuka KUKURUZ"
     when
         $gp: GlavnaParcela( 
             humus > 0.03,
-            poslednjaBiljnaKultura != BiljnaKultura.KUKURUZ,
             ocekivanaJacinaVetra == JacinaVetra.SLAB)
+        Number(intValue == 0) from accumulate(
+            PosadjenaKultura(
+                parcela.getId() == $gp.getId(),
+                kultura == BiljnaKultura.KUKURUZ
+            ) over window:time(365d), count(1))            
         not(PreporukaBiljka(kultura == BiljnaKultura.KUKURUZ,
             glavnaParcela.getId() == $gp.getId()))
     then
@@ -177,6 +201,7 @@ rule "Rotacija SUNCOKRET"
         insert(new PreporukaBiljka(BiljnaKultura.SUNCOKRET, $gp));
         $gp.getPreporuke().add("SUNCOKRET");
 end
+
 
 template "pravila-za-grupu-zrenja"
 
