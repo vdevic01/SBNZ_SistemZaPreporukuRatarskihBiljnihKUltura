@@ -1,8 +1,5 @@
 package com.ftn.sbnz.service.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.ftn.sbnz.model.models.BiljnaKultura;
 import com.ftn.sbnz.model.models.JacinaVetra;
 import com.ftn.sbnz.model.models.Korisnik;
