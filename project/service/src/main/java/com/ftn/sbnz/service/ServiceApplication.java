@@ -8,11 +8,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 
 import org.drools.template.DataProviderCompiler;
+import org.drools.core.io.impl.InputStreamResource;
 import org.drools.template.DataProvider;
 import org.drools.template.objects.ArrayDataProvider;
 import org.kie.api.builder.Message;
 import org.kie.api.builder.Results;
 import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.io.ResourceFactory;
@@ -31,8 +33,17 @@ public class ServiceApplication  {
 	public KieSession kieSession() {
 
 		KieHelper kieHelper = new KieHelper();
-		kieHelper.addResource(ResourceFactory.newClassPathResource("cep.drl"), ResourceType.DRL);
+		ClassPathResource drlClasspath = new ClassPathResource("/rules/cep/cep.drl");
+		try {
+			org.springframework.core.io.InputStreamResource drlInputStreamResource = new org.springframework.core.io.InputStreamResource(drlClasspath.getInputStream());
+			Resource drlResource = new InputStreamResource(drlInputStreamResource.getInputStream());
+			kieHelper.addResource(drlResource, ResourceType.DRL);
 
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		
 
 		ClassPathResource classPathResource = new ClassPathResource("/rules/cep/ripening-group-rules.drt");
         InputStream template;
