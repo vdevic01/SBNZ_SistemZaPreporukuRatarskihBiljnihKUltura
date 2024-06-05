@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -65,9 +66,8 @@ public class SampleAppController {
 	}
 
 	@RequestMapping(value = "/parcel/{parcelId}/plant/{plant}", method = RequestMethod.POST)
-	public ResponseEntity<?> plant(@PathParam(value = "parcelId") Long parcelId, @PathParam(value = "plant") BiljnaKultura plant){
-		// TODO
-		return new ResponseEntity<>(null);
+	public ResponseEntity<ParcelResponseDto> plant(@PathVariable(value = "parcelId") Long parcelId, @PathVariable(value = "plant") BiljnaKultura plant){
+		return ResponseEntity.status(HttpStatus.OK).body(this.sampleService.plant(parcelId, plant));
 	}
 
 	@RequestMapping(value = "/preporuke", method = RequestMethod.POST)

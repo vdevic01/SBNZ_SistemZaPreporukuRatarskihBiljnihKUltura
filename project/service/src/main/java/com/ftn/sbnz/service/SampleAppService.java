@@ -10,7 +10,6 @@ import java.util.Optional;
 
 import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.ObjectFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -89,7 +88,7 @@ public class SampleAppService {
 				LocalDateTime localDate = LocalDateTime.parse(parcelDto.getLastSowing().getDate(), isoFormatter);
 				Instant instant = localDate.atZone(ZoneId.systemDefault()).toInstant();        
 				Date date = Date.from(instant);
-				PosadjenaKultura lastSowingDrl = new PosadjenaKultura(parcelDrl, date, parcelDto.getLastSowing().getPlant());
+				PosadjenaKultura lastSowingDrl = new PosadjenaKultura(parcel.getId(), date, parcelDto.getLastSowing().getPlant());
 				kieSession.insert(lastSowingDrl);
 			}catch(Exception e){
 				System.out.println(e.getMessage());
@@ -100,9 +99,6 @@ public class SampleAppService {
 		kieSession.insert(mp01);
 		kieSession.insert(mp02);
 		kieSession.fireAllRules();
-		for(Object obj : kieSession.getObjects(new ClassObjectFilter(GlavnaParcela.class))){
-			System.out.println(obj.toString());
-		}
 		for(String recommendation : parcelDrl.getPreporukeGrupa()){
 			parcel.getRecommendations().add(GrupaZrenja.valueOf(recommendation));
 		}
@@ -123,6 +119,21 @@ public class SampleAppService {
 		if(owner.getId() != parcel.getId()){
 			throw new ForbiddenException("Forribiden request");
 		}
+		PosadjenaKultura pk = new PosadjenaKultura(parcelId, new Date(), plant);
+		kieSession.insert(pk);
+		kieSession.fireAllRules();
+		parcel.getRecommendations().clear();
+		for(Object obj : kieSession.getObjects(new ClassObjectFilter(GlavnaParcela.class))){
+			GlavnaParcela glavnaParcela = (GlavnaParcela) obj;
+			if(glavnaParcela.getId() == parcel.getId()){
+				for(String recommendation : glavnaParcela.getPreporukeGrupa()){
+					parcel.getRecommendations().add(GrupaZrenja.valueOf(recommendation));
+				}
+			}
+		}
+		ParcelResponseDto response = new ParcelResponseDto(parcel);
+		parcelRepository.save(parcel);
+		return response;
 	} 
 
 	public List<String> dobaviPreporuke(GlavnaParcela parcela){

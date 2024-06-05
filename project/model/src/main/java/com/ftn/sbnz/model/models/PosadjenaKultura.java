@@ -8,16 +8,10 @@ import org.kie.api.definition.type.Timestamp;
 @Role(Role.Type.EVENT)
 @Timestamp("timestamp")
 public class PosadjenaKultura {
-    private GlavnaParcela parcela;
+    private long parcelaId;
     private Date timestamp;
     private BiljnaKultura kultura;
 
-    public GlavnaParcela getParcela() {
-        return parcela;
-    }
-    public void setParcela(GlavnaParcela parcela) {
-        this.parcela = parcela;
-    }
     public Date getTimestamp() {
         return timestamp;
     }
@@ -31,12 +25,18 @@ public class PosadjenaKultura {
         this.kultura = kultura;
     }
 
-    public PosadjenaKultura(GlavnaParcela parcela, Date timestamp, BiljnaKultura kultura) {
-        this.parcela = parcela;
+    public PosadjenaKultura(long parcelaId, Date timestamp, BiljnaKultura kultura) {
+        this.parcelaId = parcelaId;
         this.timestamp = timestamp;
         this.kultura = kultura;
     }
     public PosadjenaKultura() {
+    }
+    public long getParcelaId() {
+        return parcelaId;
+    }
+    public void setParcelaId(long parcelaId) {
+        this.parcelaId = parcelaId;
     }
     
     

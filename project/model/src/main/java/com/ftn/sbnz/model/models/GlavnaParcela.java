@@ -20,6 +20,13 @@ public class GlavnaParcela {
     private List<String> preporuke = new ArrayList<>();
     private List<String> preporukeGrupa = new ArrayList<>();
     private List<String> finalnaPreporuka = new ArrayList<>();
+
+    public void obrisiPreporuke(){
+        this.preporuke.clear();
+        this.preporukeGrupa.clear();
+        this.finalnaPreporuka.clear();
+    }
+
     public List<String> getFinalnaPreporuka() {
         return finalnaPreporuka;
     }   

@@ -76,7 +76,7 @@ public class ExceptionResolver {
 
         return new ResponseEntity<>(msg, HttpStatus.BAD_REQUEST);
     }
-}
+
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> argumentTypeMismatch(MethodArgumentTypeMismatchException exception) {

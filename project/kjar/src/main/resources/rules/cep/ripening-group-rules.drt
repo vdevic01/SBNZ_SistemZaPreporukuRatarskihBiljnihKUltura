@@ -1,0 +1,45 @@
+package cep;
+
+import com.ftn.sbnz.model.models.GlavnaParcela
+import com.ftn.sbnz.model.models.BiljnaKultura
+import com.ftn.sbnz.model.models.JacinaVetra
+import com.ftn.sbnz.model.models.PreporukaBiljka
+import com.ftn.sbnz.model.models.GrupaZrenja
+import com.ftn.sbnz.model.models.MeteoroloskiPodaci
+import com.ftn.sbnz.model.models.PreporukaGrupaZrenja
+import com.ftn.sbnz.model.models.PosadjenaKultura
+import java.time.LocalDateTime;
+import java.time.Month;
+
+template header
+biljnaKultura
+odMeseca
+doMeseca
+akumuliranaTemperatura
+grupaZrenja
+operator
+
+template "pravila-za-grupu-zrenja"
+
+rule "Preporuka GrupaZrenja_@{row.rowNumber}"
+    when
+        $pb: PreporukaBiljka(
+            kultura == BiljnaKultura.@{biljnaKultura},
+            $gp: glavnaParcela
+        )
+        Number(doubleValue > @{akumuliranaTemperatura}) from accumulate(
+            $mp: MeteoroloskiPodaci(
+                parcelaID == $gp.getId(),
+                $timestamp: timestamp,
+                $temperatura: temperatura
+            )
+            and eval($mp.getMonth() >= Month.@{odMeseca}.getValue() @{operator} $mp.getMonth() <= Month.@{doMeseca}.getValue()),
+            sum(Math.max($temperatura - 10.0, 0.0))
+        )
+    then
+        System.out.println("======== Preporuka Grupa @{grupaZrenja} =======" + $gp.getId());
+        insert(new PreporukaGrupaZrenja(GrupaZrenja.@{grupaZrenja}, $gp));
+        $gp.getPreporukeGrupa().add("@{grupaZrenja}");
+end
+
+end template
