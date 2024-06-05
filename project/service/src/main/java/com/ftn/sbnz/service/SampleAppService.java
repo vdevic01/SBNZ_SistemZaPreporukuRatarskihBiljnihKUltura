@@ -14,12 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.ftn.sbnz.model.events.FailedLoginAttempt;
-import com.ftn.sbnz.model.events.Item;
 import com.ftn.sbnz.model.models.BiljnaKultura;
 import com.ftn.sbnz.model.models.GlavnaParcela;
 import com.ftn.sbnz.model.models.GrupaZrenja;
-import com.ftn.sbnz.model.models.JacinaVetra;
 import com.ftn.sbnz.model.models.Korisnik;
 import com.ftn.sbnz.model.models.MeteoroloskiPodaci;
 import com.ftn.sbnz.model.models.PosadjenaKultura;
@@ -46,27 +43,6 @@ public class SampleAppService {
 	private final ParcelRepository parcelRepository;
 
 	private static DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_DATE;
-
-	public Item getClassifiedItem(Item i) {
-		kieSession.insert(i);
-		kieSession.fireAllRules();
-		kieSession.dispose();
-		return i;
-	}
-
-	public void login(FailedLoginAttempt fla){
-		kieSession.insert(fla);
-		kieSession.fireAllRules();
-	}
-
-	public void test(){
-		System.out.println("======== LOG LINE 1 ========");
-		Korisnik vlasnik = new Korisnik(1, "fasfasfasf", "asfasfasf");
-		GlavnaParcela parcela = new GlavnaParcela(1, 45.123, 25.09, vlasnik, 0.08, BiljnaKultura.PSENICA, JacinaVetra.SLAB);
-		kieSession.insert(parcela);
-		kieSession.fireAllRules();
-		System.out.println("======== LOG LINE 2 ========");
-	}
 
 	private User getAuthenticatedUser(){
 		return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

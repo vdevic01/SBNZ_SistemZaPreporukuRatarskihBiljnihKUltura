@@ -1,3 +1,12 @@
+template header
+biljnaKultura
+odMeseca
+doMeseca
+akumuliranaTemperatura
+grupaZrenja
+operator
+
+
 package cep;
 
 import com.ftn.sbnz.model.models.GlavnaParcela
@@ -11,13 +20,6 @@ import com.ftn.sbnz.model.models.PosadjenaKultura
 import java.time.LocalDateTime;
 import java.time.Month;
 
-template header
-biljnaKultura
-odMeseca
-doMeseca
-akumuliranaTemperatura
-grupaZrenja
-operator
 
 template "pravila-za-grupu-zrenja"
 

@@ -4,69 +4,37 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 
 import org.drools.template.DataProviderCompiler;
 import org.drools.template.DataProvider;
 import org.drools.template.objects.ArrayDataProvider;
-import org.kie.api.KieServices;
-import org.kie.api.builder.KieScanner;
 import org.kie.api.builder.Message;
 import org.kie.api.builder.Results;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.io.ResourceType;
-import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.utils.KieHelper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @SpringBootApplication
 public class ServiceApplication  {
 	
-	private static Logger log = LoggerFactory.getLogger(ServiceApplication.class);
 	public static void main(String[] args) {
-		ApplicationContext ctx = SpringApplication.run(ServiceApplication.class, args);
-
-		// String[] beanNames = ctx.getBeanDefinitionNames();
-		// Arrays.sort(beanNames);
-
-		// StringBuilder sb = new StringBuilder("Application beans:\n");
-		// for (String beanName : beanNames) {
-		// 	sb.append(beanName + "\n");
-		// }
-		// log.info(sb.toString());
-	}
-
-	@Bean
-	public KieContainer kieContainer(){
-		KieServices ks = KieServices.Factory.get();
-		KieContainer kContainer = ks
-				.newKieContainer(ks.newReleaseId("com.ftn.sbnz", "kjar", "0.0.1-SNAPSHOT"));
-		KieScanner kScanner = ks.newKieScanner(kContainer);
-		kScanner.start(1000);
-		return kContainer;
+		SpringApplication.run(ServiceApplication.class, args);
 	}
 
 	@Bean
 	public KieSession kieSession() {
-		KieServices ks = KieServices.Factory.get();
-		KieContainer kContainer = ks
-				.newKieContainer(ks.newReleaseId("com.ftn.sbnz", "kjar", "0.0.1-SNAPSHOT"));
-		KieScanner kScanner = ks.newKieScanner(kContainer);
-		kScanner.start(1000);
-		KieSession kieSession = kContainer.newKieSession("cepKsession");
-		// return kieSession;
-		return createKieSessionFromTemplate();
-	}
 
-	public KieSession createKieSessionFromTemplate() {
-        ClassPathResource classPathResource = new ClassPathResource("/rules/cep/template-rules.drt");
+		KieHelper kieHelper = new KieHelper();
+		kieHelper.addResource(ResourceFactory.newClassPathResource("cep.drl"), ResourceType.DRL);
+
+
+		ClassPathResource classPathResource = new ClassPathResource("/rules/cep/ripening-group-rules.drt");
         InputStream template;
         try {
             template = classPathResource.getInputStream();
@@ -103,15 +71,8 @@ public class ServiceApplication  {
         DataProviderCompiler converter = new DataProviderCompiler();
         String drl = converter.compile(dataProvider, template);
 
-        return createKieSessionFromDRL(drl);
-    }
-
-    private KieSession createKieSessionFromDRL(String drl) {
-        KieHelper kieHelper = new KieHelper();
-        kieHelper.addContent(drl, ResourceType.DRL);
-		
-
-        Results results = kieHelper.verify();
+		kieHelper.addContent(drl, ResourceType.DRL);
+		Results results = kieHelper.verify();
 
         if (results.hasMessages(Message.Level.WARNING, Message.Level.ERROR)) {
             List<Message> messages = results.getMessages(Message.Level.WARNING, Message.Level.ERROR);
@@ -121,8 +82,9 @@ public class ServiceApplication  {
 
             throw new IllegalStateException("Compilation errors were found. Check the logs.");
         }
+
         return kieHelper.build(EventProcessingOption.STREAM).newKieSession();
-    }
+	}
 }
 
 	 // Degree day se racuna kao Max((MaxTemp + MinTemp) / 2 - 10, 0)
