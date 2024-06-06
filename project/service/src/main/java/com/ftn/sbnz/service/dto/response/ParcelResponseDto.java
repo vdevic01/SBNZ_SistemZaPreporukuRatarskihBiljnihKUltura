@@ -2,7 +2,6 @@ package com.ftn.sbnz.service.dto.response;
 
 import java.util.List;
 
-import com.ftn.sbnz.model.models.GrupaZrenja;
 import com.ftn.sbnz.model.models.JacinaVetra;
 import com.ftn.sbnz.service.model.Parcel;
 
@@ -19,7 +18,7 @@ public class ParcelResponseDto {
     private double longitude;
     private double humusContent;
     private JacinaVetra expectedWindStrength;
-    private List<GrupaZrenja> recommendations;
+    private List<HybridRecommendationDto> recommendations;
 
     public ParcelResponseDto(Parcel parcel){
         this.id = parcel.getId();
@@ -27,6 +26,6 @@ public class ParcelResponseDto {
         this.longitude = parcel.getLongitude();
         this.humusContent = parcel.getHumusContent();
         this.expectedWindStrength = parcel.getExpectedWindStrength();
-        this.recommendations = parcel.getRecommendations();
+        this.recommendations = parcel.getRecommendations().stream().map(HybridRecommendationDto::new).toList();
     }
 }

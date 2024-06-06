@@ -1,0 +1,41 @@
+template header
+biljnaKultura
+grupaZrenja
+proizvodjac
+naziv
+
+package cep;
+
+import com.ftn.sbnz.model.models.GlavnaParcela
+import com.ftn.sbnz.model.models.GrupaZrenja
+import com.ftn.sbnz.model.models.BiljnaKultura
+import com.ftn.sbnz.model.models.PreporukaGrupaZrenja
+import com.ftn.sbnz.model.models.PreferencaProizvodjaca
+import com.ftn.sbnz.model.models.Hibrid
+import com.ftn.sbnz.model.models.Proizvodjac
+
+rule "test rule"
+    when
+        $pgz: PreporukaGrupaZrenja()
+    then
+        System.out.println($pgz.getGrupa());
+end
+
+template "pravila-za-sortu"
+
+rule "Preporuka Sorta_@{row.rowNumber}"
+    when
+        PreporukaGrupaZrenja(
+            $gp: glavnaParcela,
+            grupa == GrupaZrenja.@{grupaZrenja}
+        )
+        PreferencaProizvodjaca(
+            parcelaId == $gp.getId(),
+            (proizvodjac == Proizvodjac.ANY || proizvodjac == Proizvodjac.@{proizvodjac}) 
+        )
+    then
+        System.out.println("Preporuka " + "@{proizvodjac}  @{naziv}");
+        $gp.getPreporuke().add(new Hibrid(BiljnaKultura.@{biljnaKultura}, Proizvodjac.@{proizvodjac}, "@{naziv}"));
+end
+
+end template

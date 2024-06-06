@@ -16,17 +16,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ftn.sbnz.model.models.BiljnaKultura;
-import com.ftn.sbnz.model.models.GlavnaParcela;
-import com.ftn.sbnz.model.models.Korisnik;
-import com.ftn.sbnz.service.dto.GlavnaParcelDTO;
 import com.ftn.sbnz.service.dto.request.LoginCredentials;
 import com.ftn.sbnz.service.dto.request.ParcelDto;
 import com.ftn.sbnz.service.dto.response.ParcelResponseDto;
 import com.ftn.sbnz.service.dto.response.TokenResponse;
+import com.ftn.sbnz.service.exception.BadRequestException;
 import com.ftn.sbnz.service.model.User;
 import com.ftn.sbnz.service.security.TokenUtils;
 
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 
 
@@ -41,7 +38,7 @@ public class SampleAppController {
 		value = "/login",
 		method = RequestMethod.POST
     )
-    public ResponseEntity<?> login(@RequestBody LoginCredentials authenticationRequest) {
+    public ResponseEntity<TokenResponse> login(@RequestBody LoginCredentials authenticationRequest) {
         try{
             Authentication authentication = this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -51,7 +48,7 @@ public class SampleAppController {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         catch (AuthenticationException exception){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Wrong email or password");
+            throw new BadRequestException("Wrong email or password");
         }
     }
 
@@ -69,12 +66,5 @@ public class SampleAppController {
 	public ResponseEntity<ParcelResponseDto> plant(@PathVariable(value = "parcelId") Long parcelId, @PathVariable(value = "plant") BiljnaKultura plant){
 		return ResponseEntity.status(HttpStatus.OK).body(this.sampleService.plant(parcelId, plant));
 	}
-
-	@RequestMapping(value = "/preporuke", method = RequestMethod.POST)
-	public List<String> dobaviPreporuke(@RequestBody GlavnaParcelDTO parcelaDTO){
-		GlavnaParcela parcela = new GlavnaParcela(parcelaDTO.getId(), parcelaDTO.getGeografskaSirina(), parcelaDTO.getGeografskaDuzina(), new Korisnik(1, null, null), parcelaDTO.getHumus(), parcelaDTO.getPoslednjaBiljnaKultura(), parcelaDTO.getOcekivanaJacinaVetra());
-		return this.sampleService.dobaviPreporuke(parcela);
-	}
-
 	
 }

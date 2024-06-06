@@ -26,7 +26,6 @@ rule "Preporuka SUNCOKRET"
     then
         System.out.println("======== Preporuka SUNCOKRET =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.SUNCOKRET, $gp));
-        $gp.getPreporuke().add("SUNCOKRET");
 end
 
 rule "Preporuka SOJA"
@@ -44,7 +43,6 @@ rule "Preporuka SOJA"
     then
         System.out.println("======== Preporuka SOJA =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.SOJA, $gp));
-        $gp.getPreporuke().add("SOJA");
 end
 
 rule "Preporuka PSENICA"
@@ -62,7 +60,6 @@ rule "Preporuka PSENICA"
     then
         System.out.println("======== Preporuka psenica =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.PSENICA, $gp));
-        $gp.getPreporuke().add("PSENICA");
 end
 
 rule "Preporuka ULJANA_REPICA"
@@ -81,7 +78,6 @@ rule "Preporuka ULJANA_REPICA"
     then
         System.out.println("======== Preporuka ULJANA_REPICA =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.ULJANA_REPICA, $gp));
-        $gp.getPreporuke().add("ULJANA_REPICA");
 end
 
 rule "Preporuka SECERNA_REPA"
@@ -97,7 +93,6 @@ rule "Preporuka SECERNA_REPA"
     then
         System.out.println("======== Preporuka SECERNA_REPA =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.SECERNA_REPA, $gp));
-        $gp.getPreporuke().add("SECERNA_REPA");
 end
 
 rule "Preporuka KUKURUZ"
@@ -115,7 +110,6 @@ rule "Preporuka KUKURUZ"
     then
         System.out.println("======== Preporuka KUKURUZ =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.KUKURUZ, $gp));
-        $gp.getPreporuke().add("KUKURUZ");
 end
 
 rule "Rotacija PSENICA"
@@ -137,7 +131,6 @@ rule "Rotacija PSENICA"
     then
         System.out.println("======== Preporuka PSENICA =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.PSENICA, $gp));
-        $gp.getPreporuke().add("PSENICA");
 end
 
 rule "Rotacija ULJANA_REPICA"
@@ -159,7 +152,6 @@ rule "Rotacija ULJANA_REPICA"
     then
         System.out.println("======== Preporuka ULJANA_REPICA =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.ULJANA_REPICA, $gp));
-        $gp.getPreporuke().add("ULJANA_REPICA");
 end
 
 rule "Rotacija KUKURUZ"
@@ -181,7 +173,6 @@ rule "Rotacija KUKURUZ"
     then
         System.out.println("======== Preporuka KUKURUZ =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.KUKURUZ, $gp));
-        $gp.getPreporuke().add("KUKURUZ");
 end
 
 rule "Rotacija SOJA"
@@ -203,7 +194,6 @@ rule "Rotacija SOJA"
     then
         System.out.println("======== Preporuka SOJA =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.SOJA, $gp));
-        $gp.getPreporuke().add("SOJA");
 end
 
 rule "Rotacija SECERNA_REPA"
@@ -225,7 +215,6 @@ rule "Rotacija SECERNA_REPA"
     then
         System.out.println("======== Preporuka SECERNA_REPA =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.SECERNA_REPA, $gp));
-        $gp.getPreporuke().add("SECERNA_REPA");
 end
 
 rule "Rotacija SUNCOKRET"
@@ -247,7 +236,6 @@ rule "Rotacija SUNCOKRET"
     then
         System.out.println("======== Preporuka SUNCOKRET =======" + $gp.getId());
         insert(new PreporukaBiljka(BiljnaKultura.SUNCOKRET, $gp));
-        $gp.getPreporuke().add("SUNCOKRET");
 end
 
 rule "Nova posadjena biljna kultura"

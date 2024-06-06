@@ -1,0 +1,7 @@
+package com.ftn.sbnz.model.models;
+
+public enum Proizvodjac {
+    KWS, BAYER, SES_VANDERHAVE, SYNGENTA, LIMAGRAIN,
+    INVIGOR, RAGT, CORTEVA_AGRISCIENCE,MONSANTO, ANY,
+    PIONEER, ASGROW, NUSEED, ADVANTA_SEEDS, DEKALB
+}

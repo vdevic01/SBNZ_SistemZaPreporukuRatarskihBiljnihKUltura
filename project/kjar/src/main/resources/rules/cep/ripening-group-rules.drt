@@ -40,8 +40,7 @@ rule "Preporuka GrupaZrenja_@{row.rowNumber}"
         )
     then
         System.out.println("======== Preporuka Grupa @{grupaZrenja} =======" + $gp.getId());
-        insert(new PreporukaGrupaZrenja(GrupaZrenja.@{grupaZrenja}, $gp));
-        $gp.getPreporukeGrupa().add("@{grupaZrenja}");
+        insert(new PreporukaGrupaZrenja(GrupaZrenja.@{grupaZrenja}, $gp));        
 end
 
 end template

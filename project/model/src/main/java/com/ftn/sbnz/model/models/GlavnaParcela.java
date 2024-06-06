@@ -9,30 +9,14 @@ public class GlavnaParcela {
     private double geografskaSirina;
     private double geografskaDuzina;
 
-    private Korisnik vlasnik;
-
     private double humus;
-
-    private BiljnaKultura poslednjaBiljnaKultura;
 
     private JacinaVetra ocekivanaJacinaVetra;
 
-    private List<String> preporuke = new ArrayList<>();
-    private List<String> preporukeGrupa = new ArrayList<>();
-    private List<String> finalnaPreporuka = new ArrayList<>();
+    private List<Hibrid> preporuke = new ArrayList<>();
 
     public void obrisiPreporuke(){
         this.preporuke.clear();
-        this.preporukeGrupa.clear();
-        this.finalnaPreporuka.clear();
-    }
-
-    public List<String> getFinalnaPreporuka() {
-        return finalnaPreporuka;
-    }   
-    
-    public List<String> getPreporukeGrupa() {
-        return preporukeGrupa;
     }
 
     public long getId() {
@@ -59,28 +43,12 @@ public class GlavnaParcela {
         this.geografskaDuzina = geografskaDuzina;
     }
 
-    public Korisnik getVlasnik() {
-        return vlasnik;
-    }
-
-    public void setVlasnik(Korisnik vlasnik) {
-        this.vlasnik = vlasnik;
-    }
-
     public double getHumus() {
         return humus;
     }
 
     public void setHumus(double humus) {
         this.humus = humus;
-    }
-
-    public BiljnaKultura getPoslednjaBiljnaKultura() {
-        return poslednjaBiljnaKultura;
-    }
-
-    public void setPoslednjaBiljnaKultura(BiljnaKultura poslednjaBiljnaKultura) {
-        this.poslednjaBiljnaKultura = poslednjaBiljnaKultura;
     }
 
     public JacinaVetra getOcekivanaJacinaVetra() {
@@ -91,18 +59,15 @@ public class GlavnaParcela {
         this.ocekivanaJacinaVetra = ocekivanaJacinaVetra;
     }
 
-    public List<String> getPreporuke() {
+    public List<Hibrid> getPreporuke() {
         return preporuke;
     }
 
-    public GlavnaParcela(long id, double geografskaSirina, double geografskaDuzina, Korisnik vlasnik, double humus,
-            BiljnaKultura poslednjaBiljnaKultura, JacinaVetra ocekivanaJacinaVetra) {
+    public GlavnaParcela(long id, double geografskaSirina, double geografskaDuzina, double humus, JacinaVetra ocekivanaJacinaVetra) {
         this.id = id;
         this.geografskaSirina = geografskaSirina;
         this.geografskaDuzina = geografskaDuzina;
-        this.vlasnik = vlasnik;
         this.humus = humus;
-        this.poslednjaBiljnaKultura = poslednjaBiljnaKultura;
         this.ocekivanaJacinaVetra = ocekivanaJacinaVetra;
     }
     public GlavnaParcela(){

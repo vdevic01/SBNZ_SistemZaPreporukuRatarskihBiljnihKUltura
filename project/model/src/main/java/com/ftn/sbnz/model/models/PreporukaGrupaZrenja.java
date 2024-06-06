@@ -21,6 +21,4 @@ public class PreporukaGrupaZrenja {
         this.grupa = grupa;
         this.glavnaParcela = glavnaParcela;
     }
-
-    
 }

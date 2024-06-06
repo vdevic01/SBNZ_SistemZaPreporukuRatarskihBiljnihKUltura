@@ -16,14 +16,16 @@ import org.springframework.stereotype.Service;
 
 import com.ftn.sbnz.model.models.BiljnaKultura;
 import com.ftn.sbnz.model.models.GlavnaParcela;
-import com.ftn.sbnz.model.models.GrupaZrenja;
-import com.ftn.sbnz.model.models.Korisnik;
+import com.ftn.sbnz.model.models.Hibrid;
 import com.ftn.sbnz.model.models.MeteoroloskiPodaci;
 import com.ftn.sbnz.model.models.PosadjenaKultura;
+import com.ftn.sbnz.model.models.PreferencaProizvodjaca;
+import com.ftn.sbnz.model.models.Proizvodjac;
 import com.ftn.sbnz.service.dto.request.ParcelDto;
 import com.ftn.sbnz.service.dto.response.ParcelResponseDto;
 import com.ftn.sbnz.service.exception.ForbiddenException;
 import com.ftn.sbnz.service.exception.NotFoundException;
+import com.ftn.sbnz.service.model.HybridRecommendation;
 import com.ftn.sbnz.service.model.Parcel;
 import com.ftn.sbnz.service.model.User;
 import com.ftn.sbnz.service.repository.ParcelRepository;
@@ -57,8 +59,7 @@ public class SampleAppService {
 		MeteoroloskiPodaci mp01 = new MeteoroloskiPodaci(parcel.getId(), ldt01, 1200);
 		MeteoroloskiPodaci mp02 = new MeteoroloskiPodaci(parcel.getId(), ldt02, 250);
 
-		Korisnik ownerDrl = new Korisnik(owner.getId(), null, null);
-		GlavnaParcela parcelDrl = new GlavnaParcela(parcel.getId(), parcel.getLatitude(), parcel.getLongitude(), ownerDrl, parcel.getHumusContent(), parcel.getLastPlant(), parcel.getExpectedWindStrength());
+		GlavnaParcela parcelDrl = new GlavnaParcela(parcel.getId(), parcel.getLatitude(), parcel.getLongitude(), parcel.getHumusContent(), parcel.getExpectedWindStrength());
 		if(parcelDto.getLastSowing() != null){
 			try{
 				LocalDateTime localDate = LocalDateTime.parse(parcelDto.getLastSowing().getDate(), isoFormatter);
@@ -70,13 +71,15 @@ public class SampleAppService {
 				System.out.println(e.getMessage());
 			}
 		}
-
+		for(Proizvodjac manufacturer : parcelDto.getManufacturerPreferences()){
+			kieSession.insert(new PreferencaProizvodjaca(parcel.getId(), manufacturer));
+		}
 		kieSession.insert(parcelDrl);
 		kieSession.insert(mp01);
 		kieSession.insert(mp02);
 		kieSession.fireAllRules();
-		for(String recommendation : parcelDrl.getPreporukeGrupa()){
-			parcel.getRecommendations().add(GrupaZrenja.valueOf(recommendation));
+		for(Hibrid recommendation : parcelDrl.getPreporuke()){
+			parcel.getRecommendations().add(new HybridRecommendation(recommendation.getBiljnaKultura(), recommendation.getProizvodjac(), recommendation.getNaziv(), parcel));
 		}
 		parcel = parcelRepository.save(parcel);
 		return new ParcelResponseDto(parcel);
@@ -102,42 +105,13 @@ public class SampleAppService {
 		for(Object obj : kieSession.getObjects(new ClassObjectFilter(GlavnaParcela.class))){
 			GlavnaParcela glavnaParcela = (GlavnaParcela) obj;
 			if(glavnaParcela.getId() == parcel.getId()){
-				for(String recommendation : glavnaParcela.getPreporukeGrupa()){
-					parcel.getRecommendations().add(GrupaZrenja.valueOf(recommendation));
+				for(Hibrid recommendation : glavnaParcela.getPreporuke()){
+					parcel.getRecommendations().add(new HybridRecommendation(recommendation.getBiljnaKultura(), recommendation.getProizvodjac(), recommendation.getNaziv(), parcel));
 				}
 			}
 		}
 		ParcelResponseDto response = new ParcelResponseDto(parcel);
 		parcelRepository.save(parcel);
 		return response;
-	} 
-
-	public List<String> dobaviPreporuke(GlavnaParcela parcela){
-		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime timeframeStart = LocalDateTime.of(now.getYear() - 1, 1, 1, 0, 0, 0);
-		LocalDateTime timeframeEnd = LocalDateTime.of(now.getYear() - 1, 12, 31, 23, 59, 59);
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		String from = timeframeStart.format(formatter);
-		String to = timeframeEnd.format(formatter);
-		from = "2024-05-04";
-		to = "2024-05-05";
-		String url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + parcela.getGeografskaSirina() + "%2C%20" + parcela.getGeografskaDuzina() + "/" + from + "/" + to + "?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctempmax%2Ctempmin&include=days&key=" + apiKey + "&contentType=json";
-		// HttpResponse<JsonNode> jsonResponse;
-		// try {
-		// 	jsonResponse = Unirest.get(url).asJson();
-		// } catch (UnirestException e) {
-		// 	return null;
-		// }
-		// JsonNode responseBody = jsonResponse.getBody();
-		// System.out.println(responseBody.toString());
-		LocalDateTime ldt01 = LocalDateTime.of(2023, 7, 2, 0, 0, 0);
-		LocalDateTime ldt02 = LocalDateTime.of(2023, 8, 2, 0, 0, 0);
-		MeteoroloskiPodaci mp01 = new MeteoroloskiPodaci(1, ldt01, 1200);
-		MeteoroloskiPodaci mp02 = new MeteoroloskiPodaci(1, ldt02, 250);
-		kieSession.insert(parcela);
-		kieSession.insert(mp01);
-		kieSession.insert(mp02);
-		kieSession.fireAllRules();
-		return parcela.getPreporukeGrupa();
 	}
 }
