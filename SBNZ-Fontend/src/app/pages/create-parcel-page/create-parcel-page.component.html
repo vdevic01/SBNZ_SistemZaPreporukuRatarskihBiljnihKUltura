@@ -1,0 +1,45 @@
+<div class="wrapper d-flex flex-column justify-content-center p-3">
+  <h2 class="text-center mb-3">Create Parcel</h2>
+  <h4 style="margin: 0">General Information</h4>
+  <hr class="hr">
+  <div class=" d-flex flex-row mb-4">
+    <div class="map-wrapper me-3">
+      <div id="map"></div>
+    </div>
+    <div class="flex-grow-1">
+      <form [formGroup]="parcelForm">
+        <label for="input-name" class="form-label">Name</label>
+        <input id="input-name" class="form-control mb-3" formControlName="name" required>
+        <label for="input-humus" class="form-label">Humus Content</label>
+        <input id="input-humus" type="number" class="form-control mb-3" formControlName="humusContent" required>
+        <label for="select-wind" class="form-label">Wind Strength</label>
+        <select class="form-select" id="select-wind" formControlName="windStrength">
+          <option [value]="WindStrength.SLAB">Weak</option>
+          <option [value]="WindStrength.SREDNJI">Medium</option>
+          <option [value]="WindStrength.JAK">Strong</option>
+        </select>
+      </form>
+    </div>
+  </div>
+  <h4 style="margin: 0">Sowing (Optional)</h4>
+  <hr class="hr">
+  <label for="date-picker" class="form-label">Last Sowing Date</label>
+  <input type="date" class="form-control mb-3" id="date-picker" [(ngModel)]="sowingDate">
+  <h5>Last Sown Crop:</h5>
+  <ul class="ps-0 mb-4">
+    <li class="dropdown-item d-flex flex-row" [ngClass]="{'active': selectedCropType == CropType[crop]}" (click)="selectedCropType==CropType[crop] ? selectedCropType = undefined : selectedCropType = CropType[crop]" *ngFor="let crop of Object.values(CropType)">
+      <span class="flex-grow-1 align-self-center">{{getCropMapping(CropType[crop])}}</span>
+      <img class="logo-img" [src]="getCropTypeIconPath(CropType[crop])">
+    </li>
+  </ul>
+  <h4 style="margin: 0">Manufacturer Preferences (Optional)</h4>
+  <hr class="hr">
+  <ul class="mb-4 ps-0">
+    <li class="dropdown-item d-flex flex-row" (click)="selectManufacturer(manufacturer)" [ngClass]="{'active': isSelected(manufacturer)}" *ngFor="let manufacturer of manufacturers">
+      <span class="flex-grow-1 align-self-center">{{getManufacturerMapping(Manufacturer[manufacturer])}}</span>
+      <img class="logo-img" [src]="getManufacturerLogoPath(Manufacturer[manufacturer])">
+    </li>
+  </ul>
+  <hr class="hr">
+  <button type="button" class="btn btn-primary" [disabled]="parcelForm.invalid" (click)="createParcel()">Create Parcel</button>
+</div>

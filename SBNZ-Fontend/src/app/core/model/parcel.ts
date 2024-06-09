@@ -69,10 +69,11 @@ export const ManufacturerMapping: { [key in Manufacturer]: string } = {
   [Manufacturer.ANY]: 'Any Manufacturer',
 };
 export interface CreateParcelDto{
+  name: string,
   latitude: number,
   longitude: number,
   humusContent: number,
-  lastSowing: SowingEvent,
+  lastSowing?: SowingEvent,
   expectedWindStrength: WindStrength,
   manufacturerPreferences: Manufacturer[]
 }

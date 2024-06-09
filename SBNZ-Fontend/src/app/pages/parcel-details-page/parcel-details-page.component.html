@@ -17,12 +17,22 @@
   <ul class="list-group mb-4">
     <li class="list-group-item d-flex flex-row" *ngFor="let manufacturer of parcel?.manufacturerPreferences">
       <span class="flex-grow-1 align-self-center">{{getManufacturerMapping(manufacturer)}}</span>
-      <img class="logo-img" [src]="getManufacturerLogoPath(manufacturer)">
+      <img *ngIf="manufacturer != Manufacturer.ANY" class="logo-img" [src]="getManufacturerLogoPath(manufacturer)">
     </li>
   </ul>
-  <h4 style="margin: 0">Recommendations</h4>
+  <h4 style="margin: 0">Events</h4>
   <hr class="hr">
-  <ul class="list-group mb-4">
+  <h5>Choose a crop to sow:</h5>
+  <ul class="ps-0">
+    <li class="dropdown-item d-flex flex-row" [ngClass]="{'active': selectedCropType == CropType[crop]}" (click)="selectedCropType=CropType[crop]" *ngFor="let crop of Object.values(CropType)">
+      <span class="flex-grow-1 align-self-center">{{getCropMapping(CropType[crop])}}</span>
+      <img class="logo-img" [src]="getCropTypeIconPath(CropType[crop])">
+    </li>
+  </ul>
+  <button class="btn btn-primary mb-4" [ngClass]="{'disabled': !selectedCropType}" type="button" (click)="sowCrop()">Confirm</button>
+  <h4 style="margin: 0" #recommendationsSection>Recommendations</h4>
+  <hr class="hr">
+  <ul class="list-group">
     <li class="list-group-item d-flex flex-row" *ngFor="let recommendation of parcel?.recommendations">
       <div class="flex-grow-1 align-self-center">
         <div class="fw-bold">{{getCropMapping(recommendation.plant)}}</div>

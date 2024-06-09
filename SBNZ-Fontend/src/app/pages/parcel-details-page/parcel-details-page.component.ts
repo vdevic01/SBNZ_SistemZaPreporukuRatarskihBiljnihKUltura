@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ParcelService} from "../../core/services/parcel.service";
 import {ActivatedRoute} from "@angular/router";
 import {
@@ -10,13 +10,15 @@ import {
   WindStrengthMapping
 } from "../../core/model/parcel";
 import * as L from "leaflet";
-import {NgForOf} from "@angular/common";
+import {NgClass, NgForOf, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-parcel-details-page',
   standalone: true,
   imports: [
-    NgForOf
+    NgForOf,
+    NgClass,
+    NgIf
   ],
   templateUrl: './parcel-details-page.component.html',
   styleUrl: './parcel-details-page.component.css'
@@ -24,7 +26,11 @@ import {NgForOf} from "@angular/common";
 export class ParcelDetailsPageComponent implements OnInit{
   parcel?: Parcel;
   map: any;
+  selectedCropType?: CropType;
   constructor(private parcelService:ParcelService, private route: ActivatedRoute) {
+    for(let a of Object.values(CropType)){
+      console.log(a);
+    }
   }
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -77,4 +83,16 @@ export class ParcelDetailsPageComponent implements OnInit{
     const marker = L.marker([this.parcel!.latitude, this.parcel!.longitude]);
     marker.addTo(this.map);
   }
+  @ViewChild('recommendationsSection') recommendationsSection!: ElementRef;
+  sowCrop(){
+    this.parcelService.sowCrop(this.parcel!.id, this.selectedCropType!).subscribe(parcel => {
+      this.parcel = parcel;
+      this.selectedCropType = undefined;
+      this.recommendationsSection.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  protected readonly CropType = CropType;
+  protected readonly Object = Object;
+  protected readonly Manufacturer = Manufacturer;
 }

@@ -67,7 +67,7 @@ public class SampleAppController {
 		return ResponseEntity.status(HttpStatus.OK).body(this.sampleService.getParcels());
 	}
 
-	@RequestMapping(value = "/parcel/{parcelId}/plant/{plant}", method = RequestMethod.POST)
+	@RequestMapping(value = "/parcel/{parcelId}/sow/{plant}", method = RequestMethod.POST)
 	public ResponseEntity<ParcelResponseDto> plant(@PathVariable(value = "parcelId") Long parcelId, @PathVariable(value = "plant") BiljnaKultura plant){
 		return ResponseEntity.status(HttpStatus.OK).body(this.sampleService.plant(parcelId, plant));
 	}

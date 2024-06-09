@@ -1,6 +1,7 @@
 package com.ftn.sbnz.service;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -44,7 +45,7 @@ public class SampleAppService {
 
 	private final ParcelRepository parcelRepository;
 
-	private static DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_DATE;
+	private static DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
 	private User getAuthenticatedUser(){
 		return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -62,7 +63,7 @@ public class SampleAppService {
 		GlavnaParcela parcelDrl = new GlavnaParcela(parcel.getId(), parcel.getLatitude(), parcel.getLongitude(), parcel.getHumusContent(), parcel.getExpectedWindStrength());
 		if(parcelDto.getLastSowing() != null){
 			try{
-				LocalDateTime localDate = LocalDateTime.parse(parcelDto.getLastSowing().getDate(), isoFormatter);
+				LocalDateTime localDate = LocalDate.parse(parcelDto.getLastSowing().getDate(), isoFormatter).atStartOfDay();
 				Instant instant = localDate.atZone(ZoneId.systemDefault()).toInstant();        
 				Date date = Date.from(instant);
 				PosadjenaKultura lastSowingDrl = new PosadjenaKultura(parcel.getId(), date, parcelDto.getLastSowing().getPlant());

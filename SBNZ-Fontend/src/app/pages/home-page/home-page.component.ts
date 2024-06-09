@@ -33,6 +33,9 @@ export class HomePageComponent implements OnInit{
   openParcelDetails(id:number){
     this.router.navigate([`/parcel/${id}`]).then(() => {});
   }
+  openCreateParcelPage(){
+    this.router.navigate(['/parcel/create']).then(() => {});
+  }
 
   protected readonly WindStrength = WindStrength;
 }

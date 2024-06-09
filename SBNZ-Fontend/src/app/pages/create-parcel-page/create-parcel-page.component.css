@@ -1,0 +1,18 @@
+.wrapper{
+  margin: 0 auto;
+  width: 80%;
+  max-width: 80%;
+}
+.map-wrapper{
+  width: 400px;
+  height: 250px;
+  background-color: red;
+}
+#map{
+  height: 100%;
+  cursor: default;
+}
+img{
+  height: 40px;
+  width: 40px;
+}
