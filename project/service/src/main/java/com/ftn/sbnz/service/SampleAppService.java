@@ -91,6 +91,16 @@ public class SampleAppService {
 		return parcels.stream().map(ParcelResponseDto::new).toList();
 	}
 
+	public ParcelResponseDto getParcel(long parcelId){
+		Optional<Parcel> parceOptional = parcelRepository.findById(parcelId);
+		Parcel parcel = parceOptional.orElseThrow(() -> new NotFoundException("Parcel not found"));
+		User owner = getAuthenticatedUser();
+		if(owner.getId() != parcel.getOwner().getId()){
+			throw new ForbiddenException("Forribiden request");
+		}
+		return new ParcelResponseDto(parcel);
+	}
+
 	public ParcelResponseDto plant(Long parcelId, BiljnaKultura plant){
 		Optional<Parcel> parcelOpt = parcelRepository.findById(parcelId);
 		Parcel parcel = parcelOpt.orElseThrow(() -> new NotFoundException("Parcel not found"));
@@ -101,7 +111,7 @@ public class SampleAppService {
 		PosadjenaKultura pk = new PosadjenaKultura(parcelId, new Date(), plant);
 		kieSession.insert(pk);
 		kieSession.fireAllRules();
-		parcel.getRecommendations().clear();
+		parcel.clearRecommendations();
 		for(Object obj : kieSession.getObjects(new ClassObjectFilter(GlavnaParcela.class))){
 			GlavnaParcela glavnaParcela = (GlavnaParcela) obj;
 			if(glavnaParcela.getId() == parcel.getId()){
@@ -110,8 +120,8 @@ public class SampleAppService {
 				}
 			}
 		}
-		ParcelResponseDto response = new ParcelResponseDto(parcel);
 		parcelRepository.save(parcel);
+		ParcelResponseDto response = new ParcelResponseDto(parcel);
 		return response;
 	}
 }

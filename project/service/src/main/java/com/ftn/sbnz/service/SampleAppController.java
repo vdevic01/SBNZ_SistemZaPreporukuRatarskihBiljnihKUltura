@@ -52,6 +52,11 @@ public class SampleAppController {
         }
     }
 
+	@RequestMapping(value = "/parcel/{id}", method = RequestMethod.GET)
+	public ResponseEntity<ParcelResponseDto> getParcel(@PathVariable(value = "id") Long parcelId){
+		return ResponseEntity.status(HttpStatus.OK).body(this.sampleService.getParcel(parcelId));
+	}
+
 	@RequestMapping(value = "/parcel", method = RequestMethod.POST)
 	public ResponseEntity<ParcelResponseDto> createParcel(@RequestBody ParcelDto parcelDto){
 		return ResponseEntity.status(HttpStatus.OK).body(this.sampleService.createParcel(parcelDto));

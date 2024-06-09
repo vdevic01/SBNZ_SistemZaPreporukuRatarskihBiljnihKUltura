@@ -1,0 +1,37 @@
+<div class="wrapper d-flex flex-column justify-content-center p-3">
+  <h1 class="mb-3 text-center">{{parcel?.name}}</h1>
+  <h4 style="margin: 0">General Information</h4>
+  <hr class="hr">
+  <div class=" d-flex flex-row mb-4">
+    <div class="map-wrapper me-3">
+      <div id="map"></div>
+    </div>
+    <div>
+      <p class="mb-3"><b>Coordinates:</b> {{parcel?.latitude}}, {{parcel?.longitude}}</p>
+      <p class="mb-3"><b>Humus Content:</b> {{parcel?.humusContent}}</p>
+      <p class="mb-3"><b>Wind:</b> {{getWindStrengthMapping(parcel!.expectedWindStrength)}}</p>
+    </div>
+  </div>
+  <h4 style="margin: 0">Manufacturer Preferences</h4>
+  <hr class="hr">
+  <ul class="list-group mb-4">
+    <li class="list-group-item d-flex flex-row" *ngFor="let manufacturer of parcel?.manufacturerPreferences">
+      <span class="flex-grow-1 align-self-center">{{getManufacturerMapping(manufacturer)}}</span>
+      <img class="logo-img" [src]="getManufacturerLogoPath(manufacturer)">
+    </li>
+  </ul>
+  <h4 style="margin: 0">Recommendations</h4>
+  <hr class="hr">
+  <ul class="list-group mb-4">
+    <li class="list-group-item d-flex flex-row" *ngFor="let recommendation of parcel?.recommendations">
+      <div class="flex-grow-1 align-self-center">
+        <div class="fw-bold">{{getCropMapping(recommendation.plant)}}</div>
+        {{getManufacturerMapping(recommendation.manufacturer)}} - {{recommendation.name}}
+      </div>
+      <div class="align-self-center d-flex flex-row">
+        <img class="logo-img me-3" [src]="getCropTypeIconPath(recommendation.plant)">
+        <img class="logo-img" [src]="getManufacturerLogoPath(recommendation.manufacturer)">
+      </div>
+    </li>
+  </ul>
+</div>

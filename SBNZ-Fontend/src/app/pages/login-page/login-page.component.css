@@ -1,0 +1,16 @@
+.main-wrapper{
+  height: 100vh;
+  background-image: url("/assets/images/login-background.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+img{
+  max-height: 100vh;
+  overflow: hidden;
+  object-fit: cover;
+}
+.form-wrapper{
+  background-color: white;
+  border-radius: 15px;
+}

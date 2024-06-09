@@ -34,6 +34,7 @@ public class Parcel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
     private double latitude;
     private double longitude;
 
@@ -46,7 +47,7 @@ public class Parcel {
     @Enumerated(EnumType.STRING)
     private JacinaVetra expectedWindStrength;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "parcel")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "parcel", orphanRemoval = true)
     private List<HybridRecommendation> recommendations = new ArrayList<>();
 
     @ElementCollection(targetClass = Proizvodjac.class)
@@ -54,11 +55,16 @@ public class Parcel {
     private List<Proizvodjac> manufacturerPreferences = new ArrayList<>();
 
     public Parcel(ParcelDto parcelDto, User owner){
+        this.name = parcelDto.getName();
         this.latitude = parcelDto.getLatitude();
         this.longitude = parcelDto.getLongitude();
         this.humusContent = parcelDto.getHumusContent();
         this.expectedWindStrength = parcelDto.getExpectedWindStrength();
         this.owner = owner;
         this.manufacturerPreferences = parcelDto.getManufacturerPreferences();
+    }
+
+    public void clearRecommendations(){
+        this.recommendations.clear();
     }
 }

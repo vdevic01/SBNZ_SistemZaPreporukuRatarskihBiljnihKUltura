@@ -1,0 +1,23 @@
+<div class="wrapper">
+  <div class="d-flex flex-row justify-content-center mt-3">
+    <h1 class="text-center">Parcels</h1>
+    <button type="button" class="btn btn-primary rounded-circle d-flex justify-content-center" style="width: 40px; height: 40px; margin-top: 7px; margin-left: 10px">
+      <i class="bi-plus align-self-center" style="font-size: 2rem"></i>
+    </button>
+  </div>
+  <table *ngIf="!isLoading" class="table table-hover table-striped table-borderless mt-3">
+    <thead>
+      <tr>
+        <th scope="col" *ngFor="let colName of tableColumnNames">{{colName}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let parcel of parcels" class="parcel-tr" (click)="openParcelDetails(parcel.id)">
+        <td>{{parcel.name}}</td>
+        <td>{{parcel.latitude}}, {{parcel.longitude}}</td>
+        <td>{{parcel.humusContent}}</td>
+        <td>{{getWindStrengthMapping(parcel.expectedWindStrength)}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,16 @@
+.wrapper{
+  margin: 0 auto;
+  width: 80%;
+  max-width: 80%;
+}
+.map-wrapper{
+  width: 300px;
+  height: 200px;
+}
+#map{
+  height: 100%;
+}
+.logo-img{
+  height: 40px;
+  width: 40px;
+}

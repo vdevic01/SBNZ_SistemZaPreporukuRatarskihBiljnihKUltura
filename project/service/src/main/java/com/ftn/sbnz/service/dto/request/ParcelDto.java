@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParcelDto {
+    private String name;
     private double latitude;
     private double longitude;
     private double humusContent;
