@@ -5,10 +5,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +33,10 @@ import com.ftn.sbnz.service.model.HybridRecommendation;
 import com.ftn.sbnz.service.model.Parcel;
 import com.ftn.sbnz.service.model.User;
 import com.ftn.sbnz.service.repository.ParcelRepository;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,15 +58,43 @@ public class SampleAppService {
 		return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 
+	private List<MeteoroloskiPodaci> getMeteorologicalData(Parcel parcel){
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime timeframeStart = LocalDateTime.of(now.getYear() - 1, 1, 1, 0, 0, 0);
+		LocalDateTime timeframeEnd = LocalDateTime.of(now.getYear() - 1, 12, 31, 23, 59, 59);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String from = timeframeStart.format(formatter);
+		String to = timeframeEnd.format(formatter);
+		// from = "2024-05-04";
+		// to = "2024-05-05";
+		String url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + parcel.getLatitude() + "%2C%20" + parcel.getLongitude() + "/" + from + "/" + to + "?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctempmax%2Ctempmin&include=days&key=" + apiKey + "&contentType=json";
+		HttpResponse<JsonNode> jsonResponse;
+		try {
+			jsonResponse = Unirest.get(url).asJson();
+		} catch (UnirestException e) {
+			throw new RuntimeException();
+		}
+		JSONObject responseBody = jsonResponse.getBody().getObject();
+		JSONArray days = responseBody.getJSONArray("days");
+		List<MeteoroloskiPodaci> output = new ArrayList<>();
+		for(int i = 0; i < days.length(); i++){
+			JSONObject day = days.getJSONObject(i);
+			LocalDateTime date = LocalDate.parse(day.getString("datetime"), formatter).atStartOfDay();
+			double minTemp = day.getDouble("tempmin");
+			double maxTemp = day.getDouble("tempmax");
+			double degreeDays = Math.max((maxTemp + minTemp) / 2.0 - 10, 0);
+			output.add(new MeteoroloskiPodaci(parcel.getId(), date, degreeDays));
+		}
+		return output;
+	}
+
 	public ParcelResponseDto createParcel(ParcelDto parcelDto){
 		User owner = getAuthenticatedUser();
 		Parcel parcel = new Parcel(parcelDto, owner);
 		parcel = this.parcelRepository.save(parcel);
-		LocalDateTime ldt01 = LocalDateTime.of(2023, 7, 2, 0, 0, 0);
-		LocalDateTime ldt02 = LocalDateTime.of(2023, 8, 2, 0, 0, 0);
-		MeteoroloskiPodaci mp01 = new MeteoroloskiPodaci(parcel.getId(), ldt01, 1200);
-		MeteoroloskiPodaci mp02 = new MeteoroloskiPodaci(parcel.getId(), ldt02, 250);
-
+		
+		List<MeteoroloskiPodaci> temperatureData = getMeteorologicalData(parcel);
+		
 		GlavnaParcela parcelDrl = new GlavnaParcela(parcel.getId(), parcel.getLatitude(), parcel.getLongitude(), parcel.getHumusContent(), parcel.getExpectedWindStrength());
 		if(parcelDto.getLastSowing() != null){
 			try{
@@ -76,8 +111,10 @@ public class SampleAppService {
 			kieSession.insert(new PreferencaProizvodjaca(parcel.getId(), manufacturer));
 		}
 		kieSession.insert(parcelDrl);
-		kieSession.insert(mp01);
-		kieSession.insert(mp02);
+		for(MeteoroloskiPodaci mp : temperatureData){
+			kieSession.insert(mp);
+		}
+
 		kieSession.fireAllRules();
 		for(Hibrid recommendation : parcelDrl.getPreporuke()){
 			parcel.getRecommendations().add(new HybridRecommendation(recommendation.getBiljnaKultura(), recommendation.getProizvodjac(), recommendation.getNaziv(), parcel));
