@@ -43,4 +43,24 @@ rule "Preporuka GrupaZrenja_@{row.rowNumber}"
         insert(new PreporukaGrupaZrenja(GrupaZrenja.@{grupaZrenja}, $gp));        
 end
 
+rule "Log GrupaZrenja_@{row.rowNumber}"
+    when
+        $pb: PreporukaBiljka(
+            kultura == BiljnaKultura.@{biljnaKultura},
+            $gp: glavnaParcela
+        )
+        Number(doubleValue > @{akumuliranaTemperatura}) from accumulate(
+            $mp: MeteoroloskiPodaci(
+                parcelaID == $gp.getId(),
+                $timestamp: timestamp,
+                $temperatura: temperatura
+            )
+            and eval($mp.getMonth() >= Month.@{odMeseca}.getValue() @{operator} $mp.getMonth() <= Month.@{doMeseca}.getValue()),
+            sum($temperatura)
+        )
+    then
+        System.out.println("======== Preporuka Grupa @{grupaZrenja} =======" + $gp.getId());
+        insert(new PreporukaGrupaZrenja(GrupaZrenja.@{grupaZrenja}, $gp));        
+end
+
 end template
