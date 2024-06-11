@@ -65,8 +65,6 @@ public class SampleAppService {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String from = timeframeStart.format(formatter);
 		String to = timeframeEnd.format(formatter);
-		// from = "2024-05-04";
-		// to = "2024-05-05";
 		String url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + parcel.getLatitude() + "%2C%20" + parcel.getLongitude() + "/" + from + "/" + to + "?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Ctempmax%2Ctempmin&include=days&key=" + apiKey + "&contentType=json";
 		HttpResponse<JsonNode> jsonResponse;
 		try {
@@ -92,7 +90,7 @@ public class SampleAppService {
 		User owner = getAuthenticatedUser();
 		Parcel parcel = new Parcel(parcelDto, owner);
 		parcel = this.parcelRepository.save(parcel);
-		
+
 		List<MeteoroloskiPodaci> temperatureData = getMeteorologicalData(parcel);
 		
 		GlavnaParcela parcelDrl = new GlavnaParcela(parcel.getId(), parcel.getLatitude(), parcel.getLongitude(), parcel.getHumusContent(), parcel.getExpectedWindStrength());
